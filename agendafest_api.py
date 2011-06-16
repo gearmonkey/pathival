@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# encoding: utf-8
 """
 agenda_fest_api.py
 
@@ -14,6 +16,7 @@ import urllib2
 import pylast
 
 from likeThis import *
+from sonar_times import *
 from credentials import *
 
 MEDIA_DIR = os.path.join(os.path.abspath("."), u"media")
@@ -50,11 +53,41 @@ class AgendafestApi(object):
 		cherrypy.response.headers['Content-Type'] = 'application/json'
 		return simplejson.dumps(festy(festname))
 
+	@cherrypy.expose
+	def intersect(self, username, festname):
+		cherrypy.response.headers['Content-Type'] = 'applications/json'
+		return simplejson.dumps({'response':'ok',
+								'result':merge(username, festname)})
+
 config = {'/media':
 				{'tools.staticdir.on': True,
 				 'tools.staticdir.dir': MEDIA_DIR,
 				}
 		}
+
+def merge(username, festname, alpha = 0.5, beta = 0.5):
+	from_last = lfm_artists(username)
+	if len(from_last['top_artists']) == 0:
+		from_last =  lfm_artists(username, period = 'overall')
+	userartists =  [art[0] for art in from_last['top_artists']]
+	print userartists
+	from_fest = festy(festname)
+	festartists = [art['name'] for art in from_fest['response']['entities']]
+	print festartists
+	lt = likeThis(festartists, userartists)
+	lt.run()
+	max_buzzzz = from_fest['response']['entities'][0]['ordering']['value'] # list is sorted so this is max
+	merged_list = []
+	for art in from_fest['response']['entities']:
+		try:
+			merged_list.append((art['name'], 
+					(alpha*lt.result[art['name']][0]) + ((beta*art['ordering']['value'])/max_buzzzz), 
+					lt.result[art['name']][1]))
+		except Exception, e:
+			print 'trouble dealing with '+ str(art), 'reason:', e
+	print merged_list
+	merged_list.sort(key=lambda x:x[1], reverse=True)
+	return merged_list
 
 def lfm_artists(username, cutoff=20, period = '12month'):
 	net = pylast.get_lastfm_network(LAST_KEY, LAST_SECRET)
