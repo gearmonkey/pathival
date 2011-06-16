@@ -14,7 +14,13 @@ Copyright (c) 2011. All rights reserved.
 import sys
 import os
 import unittest
+from collections import defaultdict
 
+from gensim import corpora, models, similarities
+import pylast
+
+
+from credentials import *
 
 class likeThis:
 	"""
@@ -28,9 +34,26 @@ class likeThis:
 		self.method = method
 		
 	def run(self):
-		self.method()
+		if self.method == 'last':
+			self.last()
+		else:
+			raise NotImplementedError
 		
-	def last(self, ):
+	def last(self):
+		network = pylast.get_lastfm_network(LAST_KEY, LAST_SECRET)
+		self.ref_tags = defaultdict(float)
+		for artist in self.against:
+			print 'querying', artist
+			for tag in pylast.Artist(artist, network).get_top_tags():
+				self.ref_tags[tag.item] += float(int(tag.weight)+1)/len(self.against)
+		# print self.ref_tags
+		flatTags = map(lambda tag: (tag[0], int(tag[1]+1)), self.ref_tags.items())
+		# print sorted(flatTags, key=lambda x: x[1], reverse = True)
+		
+		aDict = corpora.Dictionary()
+		# aDict.bow2bow()
+			
+			
 
 
 class untitledTests(unittest.TestCase):
@@ -39,4 +62,6 @@ class untitledTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-	unittest.main()
+	# unittest.main()
+	lt = likeThis([], ['lady gaga', 'ke$ha', 'rihanna'])
+	lt.run()
