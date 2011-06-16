@@ -45,17 +45,24 @@ class likeThis:
 		for artist in self.against:
 			print 'querying', artist
 			for tag in pylast.Artist(artist, network).get_top_tags():
-				self.ref_tags[tag.item] += float(int(tag.weight)+1)/len(self.against)
+				self.ref_tags[tag.item.name] += float(int(tag.weight)+1)/len(self.against)
 		# print self.ref_tags
 		flatTags = map(lambda tag: (tag[0], int(tag[1]+1)), self.ref_tags.items())
 		# print sorted(flatTags, key=lambda x: x[1], reverse = True)
 		
 		aDict = corpora.Dictionary()
-		# aDict.bow2bow()
+		print expand(flatTags)
+		bow = aDict.doc2bow(expand(flatTags), allowUpdate = True)
+		print aDict
 			
 			
-
-
+def expand(tagList):
+	'''dirty dirty hack to unwind a bag of words. terrible.'''
+	reallyFlat = ""
+	for word, times in tagList:
+		for i in range(times):
+			reallyFlat += " "+word
+	return reallyFlat
 class untitledTests(unittest.TestCase):
 	def setUp(self):
 		pass
