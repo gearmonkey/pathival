@@ -32,7 +32,7 @@ class likeThis:
 		self.compare = compare
 		self.against = against
 		self.method = method
-		self.result = []
+		self.result = {}
 		
 	def run(self):
 		if self.method == 'last':
@@ -63,7 +63,7 @@ class likeThis:
 		resultlist = []
 		for artist in self.compare:
 			if artist in self.against:
-				self.result.append((artist, 1, artist))
+				self.result[artist] = (1, artist)
 				continue
 			artdict = {}
 			for tag in pylast.Artist(artist, network).get_top_tags():
@@ -76,7 +76,7 @@ class likeThis:
 				if distance < min_dist[1]:
 					min_dist[1] = distance
 					min_dist[0] = self.against[idx]
-			self.result.append((artist, list(sms)[0][1], min_dist[0]))
+			self.result[artist] = (list(sms)[0][1], min_dist[0])
 		
 		
 			
