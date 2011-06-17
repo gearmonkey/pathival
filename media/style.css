@@ -1,0 +1,474 @@
+/* ******************************************* 
+*
+*	David Okuniev (fat-man-collective.com)
+*
+*	June 2011
+*
+******************************************* */
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronymess, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+border : 0 none;
+
+font-weight : normal;
+margin : 0;
+outline-style : none;
+outline-width : 0;
+padding : 0;
+vertical-align : baseline;
+}
+
+object, embed {
+outline:none;
+}
+
+
+:focus {
+outline-style : none;
+outline-width : 0;
+}
+ol, ul {
+list-style-image : none;
+list-style-position : outside;
+list-style-type : none;
+}
+table {
+border-collapse : separate;
+border-spacing : 0;
+}
+caption, th, td {
+font-weight : normal;
+text-align : left;
+}
+blockquote:before, blockquote:after, q:before, q:after {
+content : "";
+}
+blockquote, q {
+quotes : "" "";
+}
+em {
+color : #666666;
+font-style : italic;
+}
+
+@font-face {
+    font-family: 'LeagueGothicRegular';
+    src: url('league_gothic-webfont.eot');
+    src: url('league_gothic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('league_gothic-webfont.woff') format('woff'),
+         url('league_gothic-webfont.ttf') format('truetype'),
+         url('league_gothic-webfont.svg#LeagueGothicRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+@font-face {
+    font-family: 'MinionProRegular';
+    src: url('minionpro-regular-webfont.eot');
+    src: url('minionpro-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('minionpro-regular-webfont.woff') format('woff'),
+         url('minionpro-regular-webfont.ttf') format('truetype'),
+         url('minionpro-regular-webfont.svg#MinionProRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+
+/*Main*/
+
+body{
+margin:0;
+font-family: MinionProRegular, sans-serif;
+}
+
+#backTextureHome{
+width:100%;
+height:100%;
+}
+
+#backTextureInner{
+
+background-image: url(img/paper.jpg) ;
+background-repeat:repeat;
+width:100%;
+min-height:356px;
+border-left:8px solid #7B0101;
+
+}
+
+#header{
+height:35px;
+border-bottom:1px solid #999999;
+font-size:26px;
+padding:4px 0 0 10px;
+}
+
+
+/*List*/
+
+#subBar {
+background-color: #CAC9C5;
+height:40px;
+width:100%;
+border-bottom:1px solid #999999;
+background-image: url(img/subBar_shadow.png);
+background-repeat: repeat-x;
+background-position: bottom left;
+}
+
+.shuffle{
+display: block;
+background-image: url(img/Sprite.png);
+background-position: 92px -102px:
+width:28px;
+height:20px:
+background:green;
+}
+
+input{
+background:#CAC9C5;
+width:300px;
+border:none;
+padding:0px 0px  0px  22px;
+margin:5px 0 0 12px;
+font-family: MinionProRegular,sans-serif;
+font-size:17px;
+color:#666;
+border:none;
+height:30px;
+background-image:url(img/search.png);
+background-repeat: no-repeat;
+background-position-y: 5px;
+-webkit-appearance: none; 
+}
+
+input.button{
+	padding:20px 0px  0px  8px;
+	width:30px;
+	height:30px;
+	background:none;
+}
+
+input.simple{
+background:none;
+-webkit-border-radius:3px;
+border:1px solid #666;
+width:255px;
+margin:20px;
+margin-right:5px;
+padding:0px 0px  0px  8px;
+font-family: Arial;
+font-weight:bold;
+font-size:13px;
+color:#333;
+height:30px;
+
+}
+
+.AddArtist{
+margin-top:3px;
+}
+
+.lastfmBtn{
+margin-top: 20px;
+}
+
+input:focus{
+color:#000;
+}
+
+ ul.list li{
+height:37px;
+width:100%;
+border-bottom:1px dotted #666;
+padding:11px 0 0 0px;
+background-image: url(img/blackarrow.png);
+background-repeat: no-repeat;
+background-position-y: 9px;
+}
+
+ ul.agenda li{
+height:37px;
+width:100%;
+border-bottom:1px dotted #666;
+padding:11px 0 0 0px;
+background-image: url(img/blackarrow.png);
+background-repeat: no-repeat;
+background-position-y: 9px;
+background-position-x: -25px;
+}
+
+.gothic{
+font-family: 'LeagueGothicRegular';
+}
+
+
+.date{
+	font-size:24px;
+	color:white;
+	height:40px;
+	padding:0px 0px 0 10px;	
+	display: block;
+	float: left;
+	width:90px;
+	
+}
+
+.time{
+	font-size:24px;
+	color:white;
+	height:40px;
+	padding:0px 0px 0 10px;	
+	display: block;
+	float: left;
+	width:65px;
+	
+}
+
+#day{
+	font-size:16px;
+	padding:8px 0 0 10px;;
+	
+}
+
+.item {
+
+font-size:21px;
+display: block;
+float: left;
+width:205px;
+color:#2C0000;
+
+}
+
+
+.listarrow{
+display: block;
+float: left;
+background-image: url(img/listarrow.png);
+background-repeat: no-repeat;
+width:9px;
+height:14px;
+margin:7px 0 0 20px;
+
+}
+
+.star{
+display: block;
+float:left;
+width:13px;
+height:13px;
+background-image: url(img/Sprite.png);
+background-position:-15px -145px;
+
+}
+
+.backtoFest{
+display: block;
+float:left;
+text-decoration: none;
+width:47px;
+height:21px;
+background-image: url(img/Sprite.png);
+background-position:-41px -9px;
+font-family: Arial,sans-serif;
+color:black;
+font-size:12px;
+padding:7px 12px;
+}
+
+.backtoAgenda{
+display: block;
+float:left;
+text-decoration: none;
+width:47px;
+height:21px;
+background-image: url(img/Sprite.png);
+background-position:-41px -224px;
+font-family: Arial,sans-serif;
+color:black;
+font-size:12px;
+padding:9px 12px;
+
+}
+
+.createAgenda{
+display: block;
+float:left;
+text-decoration: none;
+width:126px;
+height:20px;
+background-image: url(img/Sprite.png);
+background-position:-43px -49px;
+font-family: Arial,sans-serif;
+color:black;
+font-size:12px;
+padding:7px 12px;
+float:right;
+margin-top:10px;
+}
+
+.titleCentered{
+display: block;
+float:left;
+margin-left:20px;
+}
+
+a:link{text-decoration: none;}
+
+a:visited{text-decoration: none;}
+
+
+/*Detail*/
+
+
+.swapArtist{
+display: block;
+font-size:13px;
+margin-left:170px;
+margin-top:4px;
+padding-left:35px;
+padding-top:3px;
+font-family: Arial;
+background-image: url(img/Sprite.png);
+background-repeat: no-repeat;
+background-position: -92px -102px;
+height: 20px;
+}
+
+#artistImage{
+width:126px;
+height:126px;
+padding:10px;
+clear:both;
+float:left;
+}
+
+#artistInfo{
+float:left;
+width:158px;
+padding:10px 10px 0 0;
+}
+
+#play{
+position: fixed;
+display: block;
+width:44px;
+height:44px;
+left:42px;
+top:95;
+left:60;
+background-image: url(img/Sprite.png);
+
+background-position:-13px -166px;
+
+}
+
+#timeDetail{
+display:block;
+clear:both;
+font-family: 'LeagueGothicRegular';
+font-size:24px;
+color:white;
+background: black;
+padding:4px 6px 3px 5px;
+width:35px;
+}
+
+#ArtistName{
+display:block;
+clear:both;
+font-size:20px;
+margin-bottom: -4px;
+}
+
+#details{
+display:block;
+clear:both;
+color:#666;
+margin-bottom:10px;
+}
+
+.relation{
+clear:both;
+line-height: 120%;
+font-style: italic;
+font-family:Georgia;
+font-size: 14px;
+background-color: #FFF200;
+}
+
+#relatedArtist{
+font-weight: bold;
+
+}
+
+#buzz{
+clear:both;
+color:#669900;
+font-family: 'LeagueGothicRegular';
+font-size:20px;
+margin:20px 10px 0 10px;
+float:left;
+
+}
+
+#graph{
+float:left;
+margin-top:17px;
+
+}
+
+#description{
+clear:both;
+padding:10px;
+border-bottom:1px dotted #999;
+line-height: 130%;
+}
+
+#links{
+clear:both;
+padding:10px;
+line-height: 150%;
+}
+
+a, a:visited{
+
+color:#7B0101}
+
+.dialogue{
+font-family: MinionProRegular,sans-serif;
+font-size:18px;
+padding:20px 20px 00px 20px;
+line-height:130%;
+color:#2C0000;
+margin-bottom:10px;
+}
+
+.dialogue2{
+font-family: MinionProRegular,sans-serif;
+font-size:16px;
+padding:5px 20px 00px 20px;
+line-height:130%;
+color:#2C0000;
+margin-bottom:0px;
+}
+
+.explanationInput{
+display: block;
+margin:20px;
+font-family: arial;
+font-size:11px;
+color:#666;
+}
+
+.tasteFooter{
+height:45px;
+width:100%;
+border-top:1px dotted #666;
+position: absolute;
+top:310;
+}
