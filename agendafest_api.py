@@ -107,14 +107,55 @@ class AgendafestApi(object):
 		</html>		
 		""".format(festname = festival.title(), last_name = username,
 					listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
-						"\t\t\t<li>See {0} because you like {1}, Score: {2}</li>\n".format(performance[0].encode('utf8'), 
+						'\t\t\t<li>See <b><a href="getinfo?artist={0}&time=1000&date=Friday">{0}</a></b> because you like {1}, Score: {2}</li>\n'.format(performance[0].encode('utf8'), 
 																				performance[2].encode('utf8'), performance[1]), 
 						merge(username, festival))))
 						
 	@cherrypy.expose
-	def getinfo(self, artist=None):
+	def getinfo(self, artist=None, time=None, date=None, stage=None):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
-		info = 
+		artist_description, genre, url_list = get_description(artist)
+		image_url = get_image(artist)
+		audio = get_preview(artist)
+		print "audio link", audio
+		if image_url:
+			image_block = "<img src={0} />".format(image_url)
+		else:
+			image_block = '<span style="height:126px;width=126px>No Picture</span>'
+		if len(url_list) > 0:
+			moreinfo_block = "<ul>More Info:\n"
+			for outlink in url_list:
+				moreinfo_block += '\t<li><a href="{link}">{source}</a></li>\n'.format(link=outlink[1], source=outlink[0])
+			moreinfo_block += "</ul>"
+		else:
+			moreinfo_block = ""
+		
+		return """
+		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+		<head>
+		<title>Agendafest - Festivals on auto-pilot</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		</head>
+		<body style="width: 600px;margin:auto">
+		<h1 id="title">{artistName}</h1>
+		{image_block}
+		<audio controls="controls">
+			<source src={audio_url} type="audio/mpeg"/>
+			your browser doesn't support html5 audio...
+		</audio>
+		<h2>{time} - {stage}</h2>
+		<h4>{genre}</h4>
+		<p />
+		{description}
+		<p />
+		{moreinfo}
+		</body>
+		</html>		
+		""".format(artistName=artist,image_block=image_block, audio_url=audio, time=date+" "+time, 
+					stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block)
+		
 config = {'/media':
 				{'tools.staticdir.on': True,
 				 'tools.staticdir.dir': MEDIA_DIR,
