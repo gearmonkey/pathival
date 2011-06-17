@@ -2,32 +2,62 @@
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 	<head>
-		<title>AJAX with jQuery and cherrypy</title>
+		<title>Agendafest - Festivals on auto-pilot</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<script type="text/javascript" src="/media/jquery-1.4.2.min.js"></script>
         <script type="text/javascript">
             $(function() {
                 // When the testform is submitted...
-                $("#testform").submit(function() {
+                $("#thebutton").click(function() {
                     // post the form values via AJAX...
-                    $.post('/submit', {name: $("#name").val()}, function(data) {
-                            // and set the title with the result
-                            $("#title").html(data['title']) ;
-                           });
+                    $.ajax({
+						url: "/intersect/".concat($('#username').val(), "/", $('#festival').val()), 
+						beforeSend: $("#title").empty(),
+						sucess: function(data) {
+                        	// and set the title with the result
+                        	$("#title").html(data) ;
+                           	}
+						});
                     return false ;
                     });
             });
 	</script>
 </head>
-	<body>
-	<h1 id="title">What's your name?</h1>
+	<body style="width: 600px;margin:auto">
+	<h1 id="title">Welcome to Agendafest</h1>
+	<h3 id="subtitle">Please select a festival to continue:</h3>
+        <form id="agenda" action="fest" method='get'>
+			<select id="festival" name="festival"/> <br />
+				<option value="sonar">Sonar</option>
+				<option value="glastonbury">Glastonbury</option>
+				<option value="greenman">Green Man</option>
+				<option value="womad">Womad</option>
+				<option value="downloadfestival">Download Festival</option>
+				<option value="bestival">Bestival</option>
+				<option value="hopfarm">Hop Farm</option>
+				<option value="fleadh">Fleadh</option>
+				<option value="leedsreading">Leeds & Reading</option>
+				<option value="standoncalling">Standon Calling</option>
+			</select>
+			<input type="submit" value="next->" id="thebutton"/> 
+            </form>
+				
 
-        <form id="testform" action="#" method="post">
-            <p>
-                <label for="name">Name:</label>
-                <input type="text" id="name" /> <br />
-
-                <input type="submit" value="Set" />
+                <!-- <label for="username">Username:</label>
+                <input type="text" id="username" /> <br />
+				<label for="username">Festival:</label>
+				<select id="festival" /> <br />
+					<option value="sonar">Sonar</option>
+					<option value="glastonbury">Glastonbury</option>
+					<option value="greenman">Green Man</option>
+					<option value="womad">Womad</option>
+					<option value="downloadfestival">Download Festival</option>
+					<option value="bestival">Bestival</option>
+					<option value="hopfarm">Hop Farm</option>
+					<option value="fleadh">Fleadh</option>
+					<option value="leedsreading">Leeds & Reading</option>
+					<option value="standoncalling">Standon Calling</option>
+                <input type="submit" value="grab things" id="thebutton"/> -->
             </p>
         </form>
 	</body>

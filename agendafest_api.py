@@ -16,13 +16,14 @@ import urllib2
 import pylast
 
 from likeThis import *
+from artist import *
 from sonar_times import *
 from credentials import *
 
 MEDIA_DIR = os.path.join(os.path.abspath("."), u"media")
 
 fest2uuid = {'greenman' : '21c7356b82b04771966b08c122543064',
-			'Womad' : '673139f25d684e718709ea51299ccf05',
+			'womad' : '673139f25d684e718709ea51299ccf05',
 			'downloadfestival' : '8020e8c93a5d4c19a913e253c44f2e8f',
 			'bestival' : '97aa4ce95e92412ca914300526a3cc99',
 			'sonar' : 'a374b1e3bbfa4107890b56ed74c7e7fe',
@@ -59,11 +60,71 @@ class AgendafestApi(object):
 		return simplejson.dumps({'response':'ok',
 								'result':merge(username, festname)})
 
+	# non AJAX workflow here:
+	@cherrypy.expose
+	def fest(self, festival=None):
+		cherrypy.response.headers['Content-Type'] = 'text/html'
+		return """
+		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+		<head>
+		<title>Agendafest - Festivals on auto-pilot</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		</head>
+		<body style="width: 600px;margin:auto">
+		<h1 id="title">So you're going to {festname}</h1>
+		<h3 id="subtitle">Please enter your last.fm username to continue:</h3>
+	        <form id="agenda" action="buildagenda" method='get'>
+				<input type="hidden" name="festival" value="{festname}" />
+				<label for="username">Username:</label>
+                <input type="text" id="username" name="username"/> <br />
+				<input type="submit" value="bake me a list!" id="thebutton"/> 
+			</form>
+	        <p/>
+		</body>
+		</html>		
+		""".format(festname = festival)
+
+	@cherrypy.expose
+	def buildagenda(self, festival=None, username=None):
+		cherrypy.response.headers['Content-Type'] = 'text/html'
+		return """
+		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+		<head>
+		<title>Agendafest - Festivals on auto-pilot</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		</head>
+		<body style="width: 600px;margin:auto">
+		<h1 id="title">{last_name}'s {festname}</h1>
+		<h3 id="subtitle">Top recommends:</h3>
+	    <ol>
+			{listOfFun}
+		</ol>
+		</body>
+		</html>		
+		""".format(festname = festival.title(), last_name = username,
+					listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
+						"\t\t\t<li>See {0} because you like {1}, Score: {2}</li>\n".format(performance[0].encode('utf8'), 
+																				performance[2].encode('utf8'), performance[1]), 
+						merge(username, festival))))
+						
+	@cherrypy.expose
+	def getinfo(self, artist=None):
+		cherrypy.response.headers['Content-Type'] = 'text/html'
+		info = 
 config = {'/media':
 				{'tools.staticdir.on': True,
 				 'tools.staticdir.dir': MEDIA_DIR,
+				},
+			'/':
+				{'tools.caching.on': True,
+				 'tools.caching.delay':3000,
 				}
-		}
+				
+		}	
 
 def merge(username, festname, alpha = 0.5, beta = 0.5):
 	from_last = lfm_artists(username)
@@ -102,6 +163,6 @@ def festy(festname):
 																						key=MM_KEY)).read())
 def open_page():
 	webbrowser.open("http://127.0.0.1:8080/")
-# cherrypy.engine.subscribe('start', open_page)
+cherrypy.engine.subscribe('start', open_page)
 cherrypy.tree.mount(AgendafestApi(), '/', config=config)
 cherrypy.engine.start()
