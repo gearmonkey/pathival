@@ -355,7 +355,7 @@ class AgendafestApi(object):
 
 					</body>
 
-					</html>""".format(artistName=artist,image_block=image_block, audio_url=audio, time=time,date = date, 
+					</html>""".format(artistName=artist,image_block=image_block, audio_url=audio, time=time[:-2]+':'+time[-2:],date = date, 
 								stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block, username=username)
 		
 config = {'/media':
@@ -370,6 +370,7 @@ config = {'/media':
 	                'global':
 		                {'server.socket_host': '0.0.0.0',
 				 }
+				}	
 		}	
 
 def merge(username, festname, alpha = 0.8, beta = 0.2, retDict = False):
