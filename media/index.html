@@ -1,64 +1,29 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-	<head>
-		<title>Agendafest - Festivals on auto-pilot</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<script type="text/javascript" src="/media/jquery-1.4.2.min.js"></script>
-        <script type="text/javascript">
-            $(function() {
-                // When the testform is submitted...
-                $("#thebutton").click(function() {
-                    // post the form values via AJAX...
-                    $.ajax({
-						url: "/intersect/".concat($('#username').val(), "/", $('#festival').val()), 
-						beforeSend: $("#title").empty(),
-						sucess: function(data) {
-                        	// and set the title with the result
-                        	$("#title").html(data) ;
-                           	}
-						});
-                    return false ;
-                    });
-            });
-	</script>
+<!DOCTYPE html PUBLIC
+    "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"> 
+<head> 
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+ 
+	<title>AGENDAFEST</title> 
+ 	<meta name = "viewport" content = "width = device-width">
+	<meta name="Author"			content="" /> 
+	<meta name="publisher"		content="" /> 
+	<meta name="copyright"		content="" /> 
+	<meta name="description" 	content="" /> 
+	<meta name="keywords" 		content="" /> 
+ 
+	<link rel="shortcut icon" href="" /> 
+	<link rel="stylesheet" type="text/css" href="style.css" /> 
 </head>
-	<body style="width: 600px;margin:auto">
-	<h1 id="title">Welcome to Agendafest</h1>
-	<h3 id="subtitle">Please select a festival to continue:</h3>
-        <form id="agenda" action="fest" method='get'>
-			<select id="festival" name="festival"/> <br />
-				<option value="sonar">Sonar</option>
-				<option value="glastonbury">Glastonbury</option>
-				<option value="greenman">Green Man</option>
-				<option value="womad">Womad</option>
-				<option value="downloadfestival">Download Festival</option>
-				<option value="bestival">Bestival</option>
-				<option value="hopfarm">Hop Farm</option>
-				<option value="fleadh">Fleadh</option>
-				<option value="leedsreading">Leeds & Reading</option>
-				<option value="standoncalling">Standon Calling</option>
-			</select>
-			<input type="submit" value="next->" id="thebutton"/> 
-            </form>
-				
 
-                <!-- <label for="username">Username:</label>
-                <input type="text" id="username" /> <br />
-				<label for="username">Festival:</label>
-				<select id="festival" /> <br />
-					<option value="sonar">Sonar</option>
-					<option value="glastonbury">Glastonbury</option>
-					<option value="greenman">Green Man</option>
-					<option value="womad">Womad</option>
-					<option value="downloadfestival">Download Festival</option>
-					<option value="bestival">Bestival</option>
-					<option value="hopfarm">Hop Farm</option>
-					<option value="fleadh">Fleadh</option>
-					<option value="leedsreading">Leeds & Reading</option>
-					<option value="standoncalling">Standon Calling</option>
-                <input type="submit" value="grab things" id="thebutton"/> -->
-            </p>
-        </form>
-	</body>
+<body>
+	
+	<div id="backTextureHome">
+		<div id="book"><a href="media/festivals.html"><img src="media/img/book2.jpg" usemap="#m_book2" /></a></div>
+	</div>
+<map name="m_book2" id="m_book2">
+<area shape="poly" coords="550,638,640,638,640,725,550,725,550,638" href="credits.html" alt="" />
+</body>
+
 </html>

@@ -17,6 +17,7 @@ import pylast
 
 from likeThis import *
 from artist import *
+from schedulepicker import *
 from sonar_times import *
 from credentials import *
 
@@ -64,55 +65,193 @@ class AgendafestApi(object):
 	@cherrypy.expose
 	def fest(self, festival=None):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
-		return """
-		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-		   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-		<head>
-		<title>Agendafest - Festivals on auto-pilot</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		# return """
+		#		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		#		   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+		#		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+		#		<head>
+		#		<title>Agendafest - Festivals on auto-pilot</title>
+		#		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		#		</head>
+		#		<body style="width: 600px;margin:auto">
+		#		<h1 id="title">So you're going to {festname}</h1>
+		#		<h3 id="subtitle">Please enter your last.fm username to continue:</h3>
+		#			<form id="agenda" action="buildagenda" method='get'>
+		#				<input type="hidden" name="festival" value="{festname}" />
+		#				<label for="username">Username:</label>
+		#				  <input type="text" id="username" name="username"/>
+		#				<label for="cal">Build a calender?</label>
+		#				<input type="checkbox" id="cal" name="cal"/><br />
+		#				<input type="submit" value="bake me a list!" id="thebutton"/> 
+		#			</form>
+		#			<p/>
+		#		</body>
+		#		</html>		
+		#		""".format(festname = festival)
+		return """<!DOCTYPE html PUBLIC
+			"-//W3C//DTD XHTML 1.0 Transitional//EN"
+			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+		<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"> 
+		<head> 
+			<meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+
+			<title>AGENDAFEST</title> 
+			<meta name = "viewport" content = "width = device-width">
+			<meta name="Author"			content="" /> 
+			<meta name="publisher"		content="" /> 
+			<meta name="copyright"		content="" /> 
+			<meta name="description"	content="" /> 
+			<meta name="keywords"		content="" /> 
+
+			<link rel="shortcut icon" href="" /> 
+
+			<link rel="stylesheet" type="text/css" href="media/style.css" /> 
+
+
 		</head>
-		<body style="width: 600px;margin:auto">
-		<h1 id="title">So you're going to {festname}</h1>
-		<h3 id="subtitle">Please enter your last.fm username to continue:</h3>
-	        <form id="agenda" action="buildagenda" method='get'>
+
+		<body>
+
+			<div id="backTextureInner" style="height:360px;">
+
+				<div class="dialogue">
+					Builds your perfect festival agenda by matching your music tastes with recommended artists...
+				</div>	
+				<form id="agenda" action="buildagenda" method='get'>
 				<input type="hidden" name="festival" value="{festname}" />
-				<label for="username">Username:</label>
-                <input type="text" id="username" name="username"/> <br />
-				<input type="submit" value="bake me a list!" id="thebutton"/> 
-			</form>
-	        <p/>
+				<input class="simple" name="username" value="Enter Last.fm username" /> 
+
+				<span class="lastfmBtn"><input type="image" id="thebutton" class = "button" src="media/img/last_btn.png"/>
+					</span></a>
+				</form>
+
+
+
+				<div class="dialogue2">Don't have an account?	<br><span style="color:#666;">+ Add you favourite Artists...</span> </div>	
+
+
+					<input class="simple" onfocus="this.value=''" style="margin-bottom:-14px;" value="Enter artist name" />
+					<span class="explanationInput">e.g Radiohead, Sufjan Stevens, Sparklehorse...</span>
+
+
+				<div class="tasteFooter">
+					<a href="agenda.html"><span class="createAgenda">Build my Agenda</span></a>
+
+				</div>
+
+
+			</div>
+
+
 		</body>
-		</html>		
-		""".format(festname = festival)
+
+		</html>""".format(festname = festival)
 
 	@cherrypy.expose
-	def buildagenda(self, festival=None, username=None):
+	def buildagenda(self, festival=None, username=None, cal = None, x=None, y=None):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
-		return """
-		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-		   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-		<head>
-		<title>Agendafest - Festivals on auto-pilot</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		</head>
-		<body style="width: 600px;margin:auto">
-		<h1 id="title">{last_name}'s {festname}</h1>
-		<h3 id="subtitle">Top recommends:</h3>
-	    <ol>
-			{listOfFun}
-		</ol>
-		</body>
-		</html>		
-		""".format(festname = festival.title(), last_name = username,
-					listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
-						'\t\t\t<li>See <b><a href="getinfo?artist={0}&time=1000&date=Friday">{0}</a></b> because you like {1}, Score: {2}</li>\n'.format(performance[0].encode('utf8'), 
-																				performance[2].encode('utf8'), performance[1]), 
-						merge(username, festival))))
-						
+		if cal and festival in ['sonar']:
+			sp = schedulepicker(merge(username, festival, retDict = True), sonar)
+			sp.build_cal()
+			schedule = sp.agenda
+			"""<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+			   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+			<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+			<head>
+			<title>Agendafest - Festivals on auto-pilot</title>
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+			</head>
+			<body style="width: 600px;margin:auto">
+			<h1 id="title">{last_name}'s {festname}</h1>
+			<h3 id="subtitle">Top recommends:</h3>
+			<ul>
+				{listOfFun}
+			</ul>
+			</body>
+			</html>		
+			""".format(festname = festival.title(), last_name = username,
+						listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
+							'\t\t\t<li>See <b><a href="getinfo?artist={0}&time={1}&date={2}&stage={3}">{0}</a></b> because you like {1}, Score: {4}</li>\n'.format(performance[3].encode('utf8'), performance[1].encode('utf8'), performance[0], performance[2], performance[4]), schedule)))
+		else:
+			# return """
+			#		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+			#		   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+			#		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+			#		<head>
+			#		<title>Agendafest - Festivals on auto-pilot</title>
+			#		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+			#		</head>
+			#		<body style="width: 600px;margin:auto">
+			#		<h1 id="title">{last_name}'s {festname}</h1>
+			#		<h3 id="subtitle">Top recommends:</h3>
+			#		<ol>
+			#			{listOfFun}
+			#		</ol>
+			#		</body>
+			#		</html>		
+			#		""".format(festname = festival.title(), last_name = username,
+			#					listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
+			#						'\t\t\t<li>See <b><a href="getinfo?artist={0}&time=1000&date=Friday">{0}</a></b> because you like {1}, Score: {2}</li>\n'.format(performance[0].encode('utf8'), 
+			# performance[2].encode('utf8'), performance[1]),merge(username, festival))))
+			return """	<!DOCTYPE html PUBLIC
+													"-//W3C//DTD XHTML 1.0 Transitional//EN"
+													"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+												<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"> 
+												<head> 
+													<meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+
+													<title>AGENDAFEST</title> 
+													<meta name = "viewport" content = "width = device-width">
+													<meta name="Author"			content="" /> 
+													<meta name="publisher"		content="" /> 
+													<meta name="copyright"		content="" /> 
+													<meta name="description"	content="" /> 
+													<meta name="keywords"		content="" /> 
+
+													<link rel="shortcut icon" href="" /> 
+
+													<link rel="stylesheet" type="text/css" href="media/style.css" /> 
+
+
+												</head>
+
+												<body>
+
+													<div id="backTextureInner">
+
+
+														<div id="header" class="gothic">
+
+															<a href="media/festivals.html"><span class="backtoFest">Festivals</span></a>
+															<span class="titleCentered"><span style="color:#666">MY</span> {festname}</span>
+														</div>
+
+														<div id="subBar">
+
+															<div id="day">Friday 17th of June</div>
+															<div class="shuffle"></div>
+
+														</div>
+
+
+														<ul class="list agenda">
+
+															</a>
+												
+															{listOfFun}
+
+														</ul>
+
+													</div>
+
+
+												</body>
+
+												</html>""".format(festname = festival.upper(), last_name = username,
+															listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
+														'\t\t\t<a href="getinfo?artist={1}&time=1000&date=Friday&stage=SonarVillage&username={2}"><li><span class="gothic time">n&#176; {0}</span>\n<span class="item">{1}</span>\n<span class="listarrow"></span>\n	</li>\n</a>'.format(performance[0], performance[1][0].encode('utf8'), username),enumerate(merge(username, festival)))))
 	@cherrypy.expose
-	def getinfo(self, artist=None, time=None, date=None, stage=None):
+	def getinfo(self, artist=None, time=None, date=None, stage=None, username="gearmonkey"):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
 		artist_description, genre, url_list = get_description(artist)
 		image_url = get_image(artist)
@@ -130,31 +269,94 @@ class AgendafestApi(object):
 		else:
 			moreinfo_block = ""
 		
-		return """
-		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-		   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-		<head>
-		<title>Agendafest - Festivals on auto-pilot</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		</head>
-		<body style="width: 600px;margin:auto">
-		<h1 id="title">{artistName}</h1>
-		{image_block}
-		<audio controls="controls">
-			<source src={audio_url} type="audio/mpeg"/>
-			your browser doesn't support html5 audio...
-		</audio>
-		<h2>{time} - {stage}</h2>
-		<h4>{genre}</h4>
-		<p />
-		{description}
-		<p />
-		{moreinfo}
-		</body>
-		</html>		
-		""".format(artistName=artist,image_block=image_block, audio_url=audio, time=date+" "+time, 
-					stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block)
+		# return """
+		# <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		#	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+		# <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+		# <head>
+		# <title>Agendafest - Festivals on auto-pilot</title>
+		# <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		# </head>
+		# <body style="width: 600px;margin:auto">
+		# <h1 id="title">{artistName}</h1>
+		# {image_block}
+		# <audio controls="controls">
+		#	<source src={audio_url} type="audio/mpeg"/>
+		#	your browser doesn't support html5 audio...
+		# </audio>
+		# <h2>{time} - {stage}</h2>
+		# <h4>{genre}</h4>
+		# <p />
+		# {description}
+		# <p />
+		# {moreinfo}
+		# </body>
+		# </html>		
+		# """.format(artistName=artist,image_block=image_block, audio_url=audio, time=date+" "+time, 
+		#			stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block)
+		return """			<!DOCTYPE html PUBLIC
+						"-//W3C//DTD XHTML 1.0 Transitional//EN"
+						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+					<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"> 
+					<head> 
+						<meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+
+						<title>AGENDAFEST</title> 
+						<meta name = "viewport" content = "width = device-width">
+						<meta name="Author"			content="" /> 
+						<meta name="publisher"		content="" /> 
+						<meta name="copyright"		content="" /> 
+						<meta name="description"	content="" /> 
+						<meta name="keywords"		content="" /> 
+
+						<link rel="shortcut icon" href="" /> 
+
+						<link rel="stylesheet" type="text/css" href="media/style.css" /> 
+
+
+					</head>
+
+					<body>
+
+						<div id="backTextureInner">
+
+
+							<div id="header">
+
+								<a href="buildagenda?festival=sonar&username={username}"><span class="backtoAgenda">Agenda</span></a>
+
+								<span class="swapArtist">Shuffle this slot</span>
+							</div>
+
+							<div id="artistImage">
+								<a href="{audio_url}">
+								{image_block}
+								<span id="play"></span></a>
+							</div>
+							<div id="artistInfo">
+								<span id="timeDetail">{time}</span>
+								<span id="ArtistName"> {artistName}</span>
+								<span id="details">{date} / {stage} </span>
+								<span class="relation">Go see them becasue you also like:</span><span id="relatedArtist"> Nosia</span>
+
+
+							</div>
+
+							<div id="description">
+								{description}
+							</div>
+
+							<div id="links">
+							{moreinfo}
+							</div>
+
+						</div>
+
+
+					</body>
+
+					</html>""".format(artistName=artist,image_block=image_block, audio_url=audio, time=time,date = date, 
+								stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block, username=username)
 		
 config = {'/media':
 				{'tools.staticdir.on': True,
@@ -163,14 +365,17 @@ config = {'/media':
 			'/':
 				{'tools.caching.on': True,
 				 'tools.caching.delay':3000,
-				}
-				
+				 'tools.proxy.on':True,
+ 				},
+	                'global':
+		                {'server.socket_host': '0.0.0.0',
+				 }
 		}	
 
-def merge(username, festname, alpha = 0.5, beta = 0.5):
+def merge(username, festname, alpha = 0.8, beta = 0.2, retDict = False):
 	from_last = lfm_artists(username)
 	if len(from_last['top_artists']) == 0:
-		from_last =  lfm_artists(username, period = 'overall')
+		from_last =	 lfm_artists(username, period = 'overall')
 	userartists =  [art[0] for art in from_last['top_artists']]
 	print userartists
 	from_fest = festy(festname)
@@ -179,16 +384,24 @@ def merge(username, festname, alpha = 0.5, beta = 0.5):
 	lt = likeThis(festartists, userartists)
 	lt.run()
 	max_buzzzz = from_fest['response']['entities'][0]['ordering']['value'] # list is sorted so this is max
-	merged_list = []
+	if retDict:
+		merged_list = {}
+	else:
+		merged_list = []
 	for art in from_fest['response']['entities']:
 		try:
-			merged_list.append((art['name'], 
+			if retDict:
+				merged_list[art['name']]=((alpha*lt.result[art['name']][0]) + ((beta*art['ordering']['value'])/max_buzzzz), 
+				lt.result[art['name']][1])
+			else:
+				merged_list.append((art['name'], 
 					(alpha*lt.result[art['name']][0]) + ((beta*art['ordering']['value'])/max_buzzzz), 
 					lt.result[art['name']][1]))
 		except Exception, e:
 			print 'trouble dealing with '+ str(art), 'reason:', e
 	print merged_list
-	merged_list.sort(key=lambda x:x[1], reverse=True)
+	if not retDict:
+		merged_list.sort(key=lambda x:x[1], reverse=True)
 	return merged_list
 
 def lfm_artists(username, cutoff=20, period = '12month'):
@@ -202,8 +415,8 @@ def lfm_artists(username, cutoff=20, period = '12month'):
 def festy(festname):
 	return simplejson.loads(urllib2.urlopen('http://apib2.semetric.com/chart/{fest}?token={key}'.format(fest=fest2uuid[festname], 
 																						key=MM_KEY)).read())
-def open_page():
-	webbrowser.open("http://127.0.0.1:8080/")
-cherrypy.engine.subscribe('start', open_page)
+#def open_page():
+#	webbrowser.open("http://127.0.0.1:8080/")
+#cherrypy.engine.subscribe('start', open_page)
 cherrypy.tree.mount(AgendafestApi(), '/', config=config)
 cherrypy.engine.start()
