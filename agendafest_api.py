@@ -65,29 +65,6 @@ class AgendafestApi(object):
 	@cherrypy.expose
 	def fest(self, festival=None):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
-		# return """
-		#		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-		#		   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-		#		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-		#		<head>
-		#		<title>Agendafest - Festivals on auto-pilot</title>
-		#		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		#		</head>
-		#		<body style="width: 600px;margin:auto">
-		#		<h1 id="title">So you're going to {festname}</h1>
-		#		<h3 id="subtitle">Please enter your last.fm username to continue:</h3>
-		#			<form id="agenda" action="buildagenda" method='get'>
-		#				<input type="hidden" name="festival" value="{festname}" />
-		#				<label for="username">Username:</label>
-		#				  <input type="text" id="username" name="username"/>
-		#				<label for="cal">Build a calender?</label>
-		#				<input type="checkbox" id="cal" name="cal"/><br />
-		#				<input type="submit" value="bake me a list!" id="thebutton"/> 
-		#			</form>
-		#			<p/>
-		#		</body>
-		#		</html>		
-		#		""".format(festname = festival)
 		return """<!DOCTYPE html PUBLIC
 			"-//W3C//DTD XHTML 1.0 Transitional//EN"
 			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
@@ -173,26 +150,6 @@ class AgendafestApi(object):
 						listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
 							'\t\t\t<li>See <b><a href="getinfo?artist={0}&time={1}&date={2}&stage={3}">{0}</a></b> because you like {1}, Score: {4}</li>\n'.format(performance[3].encode('utf8'), performance[1].encode('utf8'), performance[0], performance[2], performance[4]), schedule)))
 		else:
-			# return """
-			#		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-			#		   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-			#		<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-			#		<head>
-			#		<title>Agendafest - Festivals on auto-pilot</title>
-			#		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-			#		</head>
-			#		<body style="width: 600px;margin:auto">
-			#		<h1 id="title">{last_name}'s {festname}</h1>
-			#		<h3 id="subtitle">Top recommends:</h3>
-			#		<ol>
-			#			{listOfFun}
-			#		</ol>
-			#		</body>
-			#		</html>		
-			#		""".format(festname = festival.title(), last_name = username,
-			#					listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
-			#						'\t\t\t<li>See <b><a href="getinfo?artist={0}&time=1000&date=Friday">{0}</a></b> because you like {1}, Score: {2}</li>\n'.format(performance[0].encode('utf8'), 
-			# performance[2].encode('utf8'), performance[1]),merge(username, festival))))
 			return """	<!DOCTYPE html PUBLIC
 													"-//W3C//DTD XHTML 1.0 Transitional//EN"
 													"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
@@ -269,31 +226,6 @@ class AgendafestApi(object):
 		else:
 			moreinfo_block = ""
 		
-		# return """
-		# <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-		#	 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-		# <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-		# <head>
-		# <title>Agendafest - Festivals on auto-pilot</title>
-		# <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		# </head>
-		# <body style="width: 600px;margin:auto">
-		# <h1 id="title">{artistName}</h1>
-		# {image_block}
-		# <audio controls="controls">
-		#	<source src={audio_url} type="audio/mpeg"/>
-		#	your browser doesn't support html5 audio...
-		# </audio>
-		# <h2>{time} - {stage}</h2>
-		# <h4>{genre}</h4>
-		# <p />
-		# {description}
-		# <p />
-		# {moreinfo}
-		# </body>
-		# </html>		
-		# """.format(artistName=artist,image_block=image_block, audio_url=audio, time=date+" "+time, 
-		#			stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block)
 		return """			<!DOCTYPE html PUBLIC
 						"-//W3C//DTD XHTML 1.0 Transitional//EN"
 						"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
@@ -366,6 +298,11 @@ config = {'/media':
 				{'tools.caching.on': True,
 				 'tools.caching.delay':3000,
 				 'tools.proxy.on':True,
+				 #mmmm... cookies
+				 'tools.sessions.on': True,
+				 'tools.sessions.storage_type': 'file',
+				 'tools.sessions.storage_path': './sessions',
+				 'tools.sessions.timeout':60,#in minutes
  				},
 	                'global':
 		                {'server.socket_host': '127.0.0.1',
@@ -401,7 +338,6 @@ def merge(username, festname, alpha = 0.8, beta = 0.2, retDict = False):
 					lt.result[art['name']][1]))
 		except Exception, e:
 			print 'trouble dealing with '+ str(art), 'reason:', e
-	print merged_list
 	if not retDict:
 		merged_list.sort(key=lambda x:x[1], reverse=True)
 	return merged_list
