@@ -102,12 +102,12 @@ class likeThis:
 			this_bow = self._tags2bow(artdict)
 			sms = similarities.Similarity([target_tags, this_bow])
 			ref_sms = similarities.Similarity([this_bow]+refbows)
-			min_dist = [None, 10000]
+			max_sim = [None, -1]
 			for idx, distance in enumerate(list(ref_sms)[0][1:]):
-				if distance < min_dist[1]:
-					min_dist[1] = distance
-					min_dist[0] = self.against[idx]
-			self.result[artist] = (list(sms)[0][1], min_dist[0])
+				if distance > max_sim[1]:
+					max_sim[1] = distance
+					max_sim[0] = self.against[idx]
+			self.result[artist] = (list(sms)[0][1], max_sim[0])
 			try:
 				cherrypy.session[artist] = self.result[artist]
 				print artist, 'provenance to', self.result[artist], 'in session'
