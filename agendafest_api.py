@@ -88,7 +88,7 @@ class AgendafestApi(object):
 
 		</head>
 
-		<body>
+		<body class="inbook">
 
 			<div id="backTextureInner" style="height:360px;">
 
@@ -139,7 +139,7 @@ class AgendafestApi(object):
 			<title>Agendafest - Festivals on auto-pilot</title>
 			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 			</head>
-			<body style="width: 600px;margin:auto">
+			<body class="inbook" style="width: 600px;margin:auto">
 			<h1 id="title">{last_name}'s {festname}</h1>
 			<h3 id="subtitle">Top recommends:</h3>
 			<ul>
@@ -173,7 +173,7 @@ class AgendafestApi(object):
 
 												</head>
 
-												<body>
+												<body class="inbook">
 
 													<div id="backTextureInner">
 
@@ -207,9 +207,9 @@ class AgendafestApi(object):
 
 												</html>""".format(festname = festival.upper(), last_name = username,
 															listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
-														'\t\t\t<a href="getinfo?artist={1}&time=1000&date=Friday&stage=SonarVillage&username={2}"><li><span class="gothic time">n&#176; {0}</span>\n<span class="item">{3}</span>\n<span class="listarrow"></span>\n	</li>\n</a>'.format(performance[0], urllib.quote(performance[1][0].encode('utf8')), username, performance[1][0].encode('utf8')),enumerate(merge(username, festival)))))
+														'\t\t\t<a href="getinfo?artist={1}&stage={4}&username={2}"><li><span class="gothic time">n&#176; {0}</span>\n<span class="item">{3}</span>\n<span class="listarrow"></span>\n	</li>\n</a>'.format(performance[0], urllib.quote(performance[1][0].encode('utf8')), username, performance[1][0].encode('utf8'),festival.title()),enumerate(merge(username, festival)))))
 	@cherrypy.expose
-	def getinfo(self, artist=None, time=None, date=None, stage=None, username="gearmonkey"):
+	def getinfo(self, artist=None, time="----", date="", stage="", username=None):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
 		artist_description, genre, url_list = get_description(artist)
 		image_url = get_image(artist)
@@ -226,6 +226,14 @@ class AgendafestApi(object):
 			moreinfo_block += "</ul>"
 		else:
 			moreinfo_block = ""
+		try:
+			why_string = "<span class=\"relation\">Go see them becasue you also like:</span><span id=\"relatedArtist\"> {artist}</span>".format(artist=cherrypy.session.get(artist)[1])
+		except KeyError:
+			print artist, "not in cookie session"
+			why_string = "<span class=\"relation\"></span>"
+		except:
+			print 'weirdness trying to sort provenance of rec for', artist
+			why_string = "<span class=\"relation\"></span>"
 		
 		return """			<!DOCTYPE html PUBLIC
 						"-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -249,7 +257,7 @@ class AgendafestApi(object):
 
 					</head>
 
-					<body>
+					<body class="inbook">
 
 						<div id="backTextureInner">
 
@@ -270,8 +278,7 @@ class AgendafestApi(object):
 								<span id="timeDetail">{time}</span>
 								<span id="ArtistName"> {artistName}</span>
 								<span id="details">{date} / {stage} </span>
-								<span class="relation">Go see them becasue you also like:</span><span id="relatedArtist"> Nosia</span>
-
+                                                                {provenance}
 
 							</div>
 
@@ -289,7 +296,7 @@ class AgendafestApi(object):
 					</body>
 
 					</html>""".format(artistName=artist,image_block=image_block, audio_url=audio, time=time[:-2]+':'+time[-2:],date = date, 
-								stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block, username=username)
+								stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block, username=username, provenance=why_string)
 		
 config = {'/media':
 				{'tools.staticdir.on': True,

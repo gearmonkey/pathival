@@ -3,8 +3,9 @@
 *	David Okuniev (fat-man-collective.com)
 *
 *	June 2011
-*
-******************************************* */
+*       
+*       Modified by Ben Fields (benfield
+********************************************/
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronymess, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
 border : 0 none;
@@ -84,6 +85,12 @@ margin:0;
 font-family: MinionProRegular, sans-serif;
 }
 
+body.inbook{
+border-left: 8px solid #7B0101;
+}
+
+
+
 #backTextureHome{
 width:100%;
 height:100%;
@@ -95,7 +102,7 @@ background-image: url(img/paper.jpg) ;
 background-repeat:repeat;
 width:100%;
 min-height:356px;
-border-left:8px solid #7B0101;
+
 
 }
 
@@ -239,7 +246,7 @@ font-family: 'LeagueGothicRegular';
 font-size:21px;
 display: block;
 float: left;
-width:205px;
+/*width:205px;*/
 color:#2C0000;
 text-overflow: ellipsis;
 overflow: hidden;
@@ -251,12 +258,12 @@ white-space: nowrap;
 
 .listarrow{
 display: block;
-float: left;
+float: right;
 background-image: url(img/listarrow.png);
 background-repeat: no-repeat;
 width:9px;
 height:14px;
-margin:7px 0 0 20px;
+margin:7px 20px 0 0;
 
 }
 

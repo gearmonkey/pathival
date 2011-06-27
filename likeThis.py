@@ -16,11 +16,19 @@ import os
 import unittest
 from collections import defaultdict
 
+try:
+	import cherrypy
+except:
+	print 'No cherrypy, so no tag pass through info'
+
 from gensim import corpora, models, similarities
 import pylast
 
 
 from credentials import *
+
+cached_tags = {}
+
 
 class likeThis:
 	"""
@@ -54,7 +62,14 @@ class likeThis:
 		for artist in self.against:
 			print 'querying', artist
 			try:
-				for tag in pylast.Artist(artist, network).get_top_tags():
+				try:
+					artist_tags = cached_tags[artist]
+					print '\tfound cache!'
+				except KeyError:
+					print '\tno cache...'
+					cached_tags[artist] = pylast.Artist(artist, network).get_top_tags()
+					artist_tags = cached_tags[artist]
+				for tag in artist_tags:
 					self.ref_tags[tag.item.name] += float(int(tag.weight)+1)/len(self.against)
 					refdict[tag.item.name]=int(tag.weight)+1
 				refbows.append(self._tags2bow(refdict))
@@ -71,7 +86,15 @@ class likeThis:
 				continue
 			artdict = {}
 			try:
-				for tag in pylast.Artist(artist, network).get_top_tags():
+				print 'querying', artist
+				try:
+					artist_tags = cached_tags[artist]
+					print '\tfound cache!'
+				except KeyError:
+                                        print '\tno cache...'
+                                        cached_tags[artist] = pylast.Artist(artist, network).get_top_tags()
+					artist_tags = cached_tags[artist]
+				for tag in artist_tags:
 					artdict[tag.item.name]=int(tag.weight)+1
 			except:
 				print 'last.fm doesn\'t know about', artist, 'moving on...'
@@ -85,9 +108,12 @@ class likeThis:
 					min_dist[1] = distance
 					min_dist[0] = self.against[idx]
 			self.result[artist] = (list(sms)[0][1], min_dist[0])
-		
-		
-			
+			try:
+				cherrypy.session[artist] = self.result[artist]
+				print artist, 'provenance to', self.result[artist], 'in session'
+			except:
+				print 'failed to attach the provanace of',artist, 'to the session'
+				
 			
 def expand(tagList):
 	'''dirty dirty hack to unwind a bag of words. terrible.'''
