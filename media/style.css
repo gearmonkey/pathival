@@ -241,6 +241,10 @@ display: block;
 float: left;
 width:205px;
 color:#2C0000;
+text-overflow: ellipsis;
+overflow: hidden;
+white-space: nowrap;
+
 
 }
 
