@@ -25,15 +25,16 @@ from credentials import *
 MEDIA_DIR = os.path.join(os.path.abspath("."), u"media")
 
 fest2uuid = {'greenman' : '21c7356b82b04771966b08c122543064',
-			'womad' : '673139f25d684e718709ea51299ccf05',
-			'downloadfestival' : '8020e8c93a5d4c19a913e253c44f2e8f',
-			'bestival' : '97aa4ce95e92412ca914300526a3cc99',
-			'sonar' : 'a374b1e3bbfa4107890b56ed74c7e7fe',
-			'glastonbury' : 'b16a75d1be374a0485da7f987deb841f',
-			'hopfarm' : 'e2456c5842294759a54d3c9409af0755',
-			'fleadh' : 'f1b0e90e837d4144ac9760efd7024b08',
-			'leedsreading' : 'f6fbc6cacccc44acbe495aede3aad112',
-			'standoncalling' : 'fecca33180824101a75d6cbc30e772ff'}
+	     'womad' : '673139f25d684e718709ea51299ccf05',
+      	     'downloadfestival' : '8020e8c93a5d4c19a913e253c44f2e8f',
+	     'bestival' : '97aa4ce95e92412ca914300526a3cc99',
+	     'sonar' : 'a374b1e3bbfa4107890b56ed74c7e7fe',
+	     'glastonbury' : 'b16a75d1be374a0485da7f987deb841f',
+	     'hopfarm' : 'e2456c5842294759a54d3c9409af0755',
+	     'fleadh' : 'f1b0e90e837d4144ac9760efd7024b08',
+	     'leedsreading' : 'f6fbc6cacccc44acbe495aede3aad112',
+	     'standoncalling' : 'fecca33180824101a75d6cbc30e772ff',
+	     'wacken' : 'b185c91728844e738d45d13765b94993'}
 
 
 class AgendafestApi(object):
