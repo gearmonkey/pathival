@@ -11,6 +11,7 @@ import webbrowser
 import os
 import simplejson
 import sys
+import urllib
 import urllib2
 
 import pylast
@@ -148,7 +149,7 @@ class AgendafestApi(object):
 			</html>		
 			""".format(festname = festival.title(), last_name = username,
 						listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
-							'\t\t\t<li>See <b><a href="getinfo?artist={0}&time={1}&date={2}&stage={3}">{0}</a></b> because you like {1}, Score: {4}</li>\n'.format(performance[3].encode('utf8'), performance[1].encode('utf8'), performance[0], performance[2], performance[4]), schedule)))
+							'\t\t\t<li>See <b><a href="getinfo?artist={0}&time={1}&date={2}&stage={3}">{5}</a></b> because you like {1}, Score: {4}</li>\n'.format(urllib.quote(performance[3].encode('utf8')), performance[1].encode('utf8'), performance[0], performance[2], performance[4], performance[3].encode('utf8')), schedule)))
 		else:
 			return """	<!DOCTYPE html PUBLIC
 													"-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -206,7 +207,7 @@ class AgendafestApi(object):
 
 												</html>""".format(festname = festival.upper(), last_name = username,
 															listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
-														'\t\t\t<a href="getinfo?artist={1}&time=1000&date=Friday&stage=SonarVillage&username={2}"><li><span class="gothic time">n&#176; {0}</span>\n<span class="item">{1}</span>\n<span class="listarrow"></span>\n	</li>\n</a>'.format(performance[0], performance[1][0].encode('utf8'), username),enumerate(merge(username, festival)))))
+														'\t\t\t<a href="getinfo?artist={1}&time=1000&date=Friday&stage=SonarVillage&username={2}"><li><span class="gothic time">n&#176; {0}</span>\n<span class="item">{3}</span>\n<span class="listarrow"></span>\n	</li>\n</a>'.format(performance[0], urllib.quote(performance[1][0].encode('utf8')), username, performance[1][0].encode('utf8')),enumerate(merge(username, festival)))))
 	@cherrypy.expose
 	def getinfo(self, artist=None, time=None, date=None, stage=None, username="gearmonkey"):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
@@ -316,10 +317,10 @@ def merge(username, festname, alpha = 0.8, beta = 0.2, retDict = False):
 	if len(from_last['top_artists']) == 0:
 		from_last =	 lfm_artists(username, period = 'overall')
 	userartists =  [art[0] for art in from_last['top_artists']]
-	print userartists
+	#print userartists
 	from_fest = festy(festname)
 	festartists = [art['name'] for art in from_fest['response']['entities']]
-	print festartists
+	#print festartists
 	lt = likeThis(festartists, userartists)
 	lt.run()
 	max_buzzzz = from_fest['response']['entities'][0]['ordering']['value'] # list is sorted so this is max
