@@ -53,10 +53,14 @@ class likeThis:
 		self.aDict = corpora.Dictionary()
 		for artist in self.against:
 			print 'querying', artist
-			for tag in pylast.Artist(artist, network).get_top_tags():
-				self.ref_tags[tag.item.name] += float(int(tag.weight)+1)/len(self.against)
-				refdict[tag.item.name]=int(tag.weight)+1
-			refbows.append(self._tags2bow(refdict))
+			try:
+				for tag in pylast.Artist(artist, network).get_top_tags():
+					self.ref_tags[tag.item.name] += float(int(tag.weight)+1)/len(self.against)
+					refdict[tag.item.name]=int(tag.weight)+1
+				refbows.append(self._tags2bow(refdict))
+			except:
+				print 'fell over on this artist, moving on...'
+				continue
 	
 		target_tags = self._tags2bow(self.ref_tags)
 		
@@ -66,8 +70,12 @@ class likeThis:
 				self.result[artist] = (1, artist)
 				continue
 			artdict = {}
-			for tag in pylast.Artist(artist, network).get_top_tags():
-				artdict[tag.item.name]=int(tag.weight)+1
+			try:
+				for tag in pylast.Artist(artist, network).get_top_tags():
+					artdict[tag.item.name]=int(tag.weight)+1
+			except:
+				print 'last.fm doesn\'t know about', artist, 'moving on...'
+				continue
 			this_bow = self._tags2bow(artdict)
 			sms = similarities.Similarity([target_tags, this_bow])
 			ref_sms = similarities.Similarity([this_bow]+refbows)

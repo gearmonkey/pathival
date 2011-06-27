@@ -368,10 +368,11 @@ config = {'/media':
 				 'tools.proxy.on':True,
  				},
 	                'global':
-		                {'server.socket_host': '0.0.0.0',
+		                {'server.socket_host': '127.0.0.1',
+				 'enviroment':'production',
+				 'log.error_file':'/var/log/cherrypy/agendafest.log'
 				 }
-				}	
-		}	
+	    }
 
 def merge(username, festname, alpha = 0.8, beta = 0.2, retDict = False):
 	from_last = lfm_artists(username)
