@@ -13,6 +13,7 @@ import simplejson
 import sys
 import urllib
 import urllib2
+import math
 
 import pylast
 
@@ -129,6 +130,7 @@ class AgendafestApi(object):
 	@cherrypy.expose
 	def buildagenda(self, festival=None, username=None, cal = None, x=None, y=None):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
+		cherrypy.session['festival']=festival
 		if cal and festival in ['sonar']:
 			sp = schedulepicker(merge(username, festival, retDict = True), sonar)
 			sp.build_cal()
@@ -202,13 +204,13 @@ class AgendafestApi(object):
 														</ul>
 
 													</div>
-
+to
 
 												</body>
 
 												</html>""".format(festname = festival.upper(), last_name = username,
 															listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
-														'\t\t\t<a href="getinfo?artist={1}&stage={4}&username={2}"><li><span class="gothic time">n&#176; {0}</span>\n<span class="item">{3}</span>\n<span class="listarrow"></span>\n	</li>\n</a>'.format(performance[0], urllib.quote(performance[1][0].encode('utf8')), username, performance[1][0].encode('utf8'),festival.title()),enumerate(merge(username, festival)))))
+														'\t\t\t<a href="getinfo?artist={1}&stage={4}&username={2}"><li><span class="gothic time">n&#176; {0}</span>\n<span class="item">{3}</span>\n<span class="listarrow"></span>\n</li>\n</a>'.format(performance[0], urllib.quote(performance[1][0].encode('utf8')), username, performance[1][0].encode('utf8'),festival.title()),enumerate(merge(username, festival)))))
 	@cherrypy.expose
 	def getinfo(self, artist=None, time="----", date="", stage="", username=None):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
@@ -235,6 +237,10 @@ class AgendafestApi(object):
 		except:
 			print 'weirdness trying to sort provenance of rec for', artist
 			why_string = "<span class=\"relation\"></span>"
+		try:
+			fest=cherrypy.session.get('festival')
+		except:
+			fest=None
 		
 		return """			<!DOCTYPE html PUBLIC
 						"-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -265,7 +271,7 @@ class AgendafestApi(object):
 
 							<div id="header">
 
-								<a href="buildagenda?festival=sonar&username={username}"><span class="backtoAgenda">Agenda</span></a>
+								<a href="buildagenda?festival={festname}&username={username}"><span class="backtoAgenda">Agenda</span></a>
 
 								<span class="swapArtist">Shuffle this slot</span>
 							</div>
@@ -297,7 +303,7 @@ class AgendafestApi(object):
 					</body>
 
 					</html>""".format(artistName=artist,image_block=image_block, audio_url=audio, time=time[:-2]+':'+time[-2:],date = date, 
-								stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block, username=username, provenance=why_string)
+								stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block, username=username, provenance=why_string, festname=fest)
 		
 config = {'/media':
 				{'tools.staticdir.on': True,
@@ -312,6 +318,7 @@ config = {'/media':
 				 'tools.sessions.storage_type': 'file',
 				 'tools.sessions.storage_path': './sessions',
 				 'tools.sessions.timeout':60,#in minutes
+				 'tools.encode.on':True,
  				},
 	                'global':
 		                {'server.socket_host': '127.0.0.1',
@@ -320,7 +327,11 @@ config = {'/media':
 				 }
 	    }
 
-def merge(username, festname, alpha = 0.8, beta = 0.2, retDict = False):
+def merge(username, festname, alpha = 0.96, beta = 0.04, retDict = False, logzzz=True):
+	"""
+	merges the buzzzz scores and the similarities, with an optional log scaling for the buzz
+	returns a list of tuples by default can also return a dict
+	"""
 	from_last = lfm_artists(username)
 	if len(from_last['top_artists']) == 0:
 		from_last =	 lfm_artists(username, period = 'overall')
@@ -332,19 +343,37 @@ def merge(username, festname, alpha = 0.8, beta = 0.2, retDict = False):
 	lt = likeThis(festartists, userartists)
 	lt.run()
 	max_buzzzz = from_fest['response']['entities'][0]['ordering']['value'] # list is sorted so this is max
+	min_buzzzz = from_fest['response']['entities'][-1]['ordering']['value']# and thus this is the min 
+	print 'max_buzzzz:', max_buzzzz, 'min_buzzzz', min_buzzzz
+	if min_buzzzz > 0:
+		min_buzzzz = 0 # if nothing is negative, no need to adjust
 	if retDict:
 		merged_list = {}
 	else:
 		merged_list = []
 	for art in from_fest['response']['entities']:
 		try:
+	                if logzzz:
+				adjusted_buzzzz = math.log1p((abs(min_buzzzz)+art['ordering']['value'])/\
+                                                             float(abs(min_buzzzz)+max_buzzzz))
+				print "buzzzz:", art['ordering']['value'], "adjusted:",adjusted_buzzzz
+			else:
+				adjusted_buzzzz = (abs(min_buzzzz)+art['ordering']['value'])/\
+                                              float(abs(min_buzzzz)+max_buzzzz)
+
 			if retDict:
-				merged_list[art['name']]=((alpha*lt.result[art['name']][0]) + ((beta*art['ordering']['value'])/max_buzzzz), 
-				lt.result[art['name']][1])
+				merged_list[art['name']]=((alpha*lt.result[art['name']][0]) + \
+					  (beta*adjusted_buzzzz), lt.result[art['name']][1])
+				print "artist: {artist} buzzzz is {buzzzz}, sim is {sim}, merge is {merge}".format(\
+					artist=art['name'], buzzzz=adjusted_buzzzz,
+					   sim=lt.result[art['name']][0], merge=merged_list[art['name']])
 			else:
 				merged_list.append((art['name'], 
-					(alpha*lt.result[art['name']][0]) + ((beta*art['ordering']['value'])/max_buzzzz), 
-					lt.result[art['name']][1]))
+					(alpha*lt.result[art['name']][0]) +
+					 (beta*adjusted_buzzzz), lt.result[art['name']][1]))
+			        print "artist: {artist} buzzzz is {buzzzz}, sim is {sim}, merge is {merge}".format(\
+					artist=art['name'], buzzzz=adjusted_buzzzz,
+                                           sim=lt.result[art['name']][0], merge=merged_list[-1][1])
 		except Exception, e:
 			print 'trouble dealing with '+ str(art), 'reason:', e
 	if not retDict:
