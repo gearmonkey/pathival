@@ -319,6 +319,7 @@ config = {'/media':
 				 'tools.sessions.storage_path': './sessions',
 				 'tools.sessions.timeout':60,#in minutes
 				 'tools.encode.on':True,
+				 'tools.encode.encoding':'utf8',
  				},
 	                'global':
 		                {'server.socket_host': '127.0.0.1',
