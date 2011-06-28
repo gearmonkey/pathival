@@ -66,6 +66,23 @@ class AgendafestApi(object):
 
 	# non AJAX workflow here:
 	@cherrypy.expose
+	def agenda(self):
+		return"""<!DOCTYPE html PUBLIC
+                        "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+                <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+                <head>
+                </head>
+                <body class="inbook">
+                       <div id="backTextureInner" style="height:360px;">
+                             <div class="dialogue"> 
+                                  We only support last.fm history based personalisation currently...
+                                  <a href="/media/festivals.html"><span class="createAgenda">Start Again...</span></a>
+                             </div>
+                       </div>
+                 </body>
+                      """
+	@cherrypy.expose
 	def fest(self, festival=None):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
 		return """<!DOCTYPE html PUBLIC
@@ -101,7 +118,8 @@ class AgendafestApi(object):
 				<input type="hidden" name="festival" value="{festname}" />
 				<input class="simple" name="username" value="Enter Last.fm username" /> 
 
-				<span class="lastfmBtn"><input type="image" id="thebutton" class = "button" src="media/img/last_btn.png"/>
+				
+<span class="lastfmBtn"><input type="image" id="thebutton" class = "button" src="media/img/last_btn.png"/>
 					</span></a>
 				</form>
 
@@ -115,7 +133,7 @@ class AgendafestApi(object):
 
 
 				<div class="tasteFooter">
-					<a href="agenda.html"><span class="createAgenda">Build my Agenda</span></a>
+					<a href="agenda"><span class="createAgenda">Build my Agenda</span></a>
 
 				</div>
 
@@ -230,7 +248,7 @@ to
 		else:
 			moreinfo_block = ""
 		try:
-			why_string = "<span class=\"relation\">Go see them becasue you also like:</span><span id=\"relatedArtist\"> {artist}</span>".format(artist=cherrypy.session.get(artist)[1])
+			why_string = "<span class=\"relation\">Go see them because you also like</span><span id=\"relatedArtist\"> {artist}, </span><span class=\"relation\">as they both feature a bit of</span><span id=\"relatedArtist\"> {tag}</span>".format(artist=cherrypy.session.get(artist)[0][1], tag=cherrypy.session.get(artist)[1])
 		except KeyError:
 			print artist, "not in cookie session"
 			why_string = "<span class=\"relation\"></span>"

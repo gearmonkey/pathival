@@ -107,20 +107,47 @@ class likeThis:
 				if distance > max_sim[1]:
 					max_sim[1] = distance
 					max_sim[0] = self.against[idx]
+			best_dim = [-1, float('inf'), 0]#that is: idx, dim diff, mean magnitude
+			match_bow_dict = dict(refbows[self.against.index(max_sim[0])])
+			for tag_id, tag_mag in this_bow:
+				try:
+					ref_mag = match_bow_dict[tag_id]
+					diff = abs(ref_mag-tag_mag)
+					avg = (ref_mag+tag_mag)/2.0
+					if diff == 0:
+						#here only test mean mag
+						if avg > best_dim[2]:
+							best_dim = [tag_id, 0.00000000001, avg]
+					elif ((1/diff) + (avg/100)) > ((1/best_dim[1]) + (best_dim[2]/100)):
+						best_dim = [tag_id, diff, avg]
+				except KeyError:
+					continue
+			print best_dim
+			print self.aDict
+			try:
+				print 'best dim:', str(self.aDict[best_dim[0]])
+			except KeyError:
+				print 'best dim unknown'
+			print '\tdiff:', best_dim[1], 'mean mag:', best_dim[2]
 			self.result[artist] = (list(sms)[0][1], max_sim[0])
 			try:
-				cherrypy.session[artist] = self.result[artist]
-				print artist, 'provenance to', self.result[artist], 'in session'
+				if best_dim[0] == -1:
+					reason = 'who knows'
+				else:
+					reason = self.aDict[best_dim[0]]
+				cherrypy.session[artist] = (self.result[artist], reason)
+				print artist, 'provenance to', self.result[artist], 'by', 
+				print reason, 'in session'
 			except:
 				print 'failed to attach the provanace of',artist, 'to the session'
 				
 			
 def expand(tagList):
 	'''dirty dirty hack to unwind a bag of words. terrible.'''
-	reallyFlat = ""
+	reallyFlat = []
 	for word, times in tagList:
 		for i in range(times):
-			reallyFlat += " "+word
+			reallyFlat += [word]
 	return reallyFlat
 class untitledTests(unittest.TestCase):
 	def setUp(self):
