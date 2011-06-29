@@ -109,20 +109,20 @@ class AgendafestApi(object):
 
 		<body class="inbook">
 
-			<div id="backTextureInner" style="height:360px;">
+			<div id="backTextureInner" style="height:400px;">
 
 				<div class="dialogue">
 					Builds your perfect festival agenda by matching your music tastes with recommended artists...
 				</div>	
 				<form id="agenda" action="buildagenda" method='get'>
 				<input type="hidden" name="festival" value="{festname}" />
-				<input class="simple" name="username" value="Enter Last.fm username" /> 
+				<input class="simple" name="username" onfocus="this.value=''" value="Enter Last.fm username" /> 
 
 				
-<span class="lastfmBtn"><input type="image" id="thebutton" class = "button" src="media/img/last_btn.png"/>
+<span class="lastfmBtn"><input type="submit" id="thebutton" class="createAgenda" value="Who should I see?"/>
 					</span></a>
 				</form>
-
+                                
 
 
 				<div class="dialogue2">Don't have an account?	<br><span style="color:#666;">+ Add you favourite Artists...</span> </div>	
@@ -228,7 +228,7 @@ to
 
 												</html>""".format(festname = festival.upper(), last_name = username,
 															listOfFun = reduce(lambda x,y:x+y, map(lambda performance: \
-														'\t\t\t<a href="getinfo?artist={1}&stage={4}&username={2}"><li><span class="gothic time">n&#176; {0}</span>\n<span class="item">{3}</span>\n<span class="listarrow"></span>\n</li>\n</a>'.format(performance[0], urllib.quote(performance[1][0].encode('utf8')), username, performance[1][0].encode('utf8'),festival.title()),enumerate(merge(username, festival)))))
+														'\t\t\t<a href="getinfo?artist={1}&stage={4}&username={2}"><li><span class="gothic time">n&#176; {0}</span>\n<span class="item">{3}</span>\n<span class="listarrow"></span>\n</li>\n</a>'.format(performance[0]+1, urllib.quote(performance[1][0].encode('utf8')), username, performance[1][0].encode('utf8'),festival.title()),enumerate(merge(username, festival)))))
 	@cherrypy.expose
 	def getinfo(self, artist=None, time="----", date="", stage="", username=None):
 		cherrypy.response.headers['Content-Type'] = 'text/html'
@@ -323,11 +323,18 @@ to
 					</html>""".format(artistName=artist,image_block=image_block, audio_url=audio, time=time[:-2]+':'+time[-2:],date = date, 
 								stage=stage, genre = genre, description = artist_description, moreinfo=moreinfo_block, username=username, provenance=why_string, festname=fest)
 		
-config = {'/media':
+config = {'global':
+                                {'server.socket_host': '127.0.0.1',
+                                 'enviroment':'production',
+                                 'log.error_file':'/var/log/cherrypy/agendafest.log',
+				 'request.show_tracebacks': False,
+                                 },
+
+	  '/media':
 				{'tools.staticdir.on': True,
 				 'tools.staticdir.dir': MEDIA_DIR,
 				},
-			'/':
+	  '/':
 				{'tools.caching.on': True,
 				 'tools.caching.delay':3000,
 				 'tools.proxy.on':True,
@@ -338,12 +345,9 @@ config = {'/media':
 				 'tools.sessions.timeout':60,#in minutes
 				 'tools.encode.on':True,
 				 'tools.encode.encoding':'utf8',
- 				},
-	                'global':
-		                {'server.socket_host': '127.0.0.1',
 				 'enviroment':'production',
 				 'log.error_file':'/var/log/cherrypy/agendafest.log'
-				 }
+ 				}
 	    }
 
 def merge(username, festname, alpha = 0.96, beta = 0.04, retDict = False, logzzz=True):

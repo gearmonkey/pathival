@@ -135,6 +135,10 @@ height:20px:
 background:green;
 }
 
+form.agenda{
+
+}
+
 input{
 background:#CAC9C5;
 width:300px;
@@ -154,9 +158,15 @@ background-position-y: 5px;
 
 input.button{
 	padding:20px 0px  0px  8px;
-	width:30px;
-	height:30px;
-	background:none;
+	/*width:30px;*/
+	height:60px;
+	/*background:none;*/
+}
+
+input.createAgenda{
+    height:30px;
+    margin-right: 20px;
+    display:block;
 }
 
 input.simple{
@@ -180,7 +190,7 @@ margin-top:3px;
 }
 
 .lastfmBtn{
-margin-top: 20px;
+margin-top: 40px;
 }
 
 input:focus{
@@ -314,6 +324,7 @@ width:126px;
 height:20px;
 background-image: url(img/Sprite.png);
 background-position:-43px -49px;
+background-color: transparent;
 font-family: Arial,sans-serif;
 color:black;
 font-size:12px;
@@ -462,7 +473,7 @@ margin-bottom:10px;
 .dialogue2{
 font-family: MinionProRegular,sans-serif;
 font-size:16px;
-padding:5px 20px 00px 20px;
+padding:45px 20px 00px 20px;
 line-height:130%;
 color:#2C0000;
 margin-bottom:0px;
@@ -481,5 +492,5 @@ height:45px;
 width:100%;
 border-top:1px dotted #666;
 position: absolute;
-top:310;
+top:350;
 }
