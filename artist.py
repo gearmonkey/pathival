@@ -50,7 +50,7 @@ def get_description(artist_name):
 	url_list = []	
 	try:
 		#Set up the headers etc for Seevl.net API and request artist infos
-		url = 'http://seevl.net/entity/?name={name}'.format(name=urllib.quote(artist_name))
+		url = 'http://data.seevl.net/entity/?prefLabel={name}'.format(name=urllib.quote(artist_name))
 		headers = { 'Accept' : 'application/json',
 		            'X_APP_ID' : SV_ID,
 		            'X_APP_KEY' : SV_KEY }
@@ -73,15 +73,16 @@ def get_description(artist_name):
 				print "Error", e
 		else:
 			#If Seevl has info on the artist, grab some facts about them too
-			artist_sid = artist_info['results'][0]['sid']
-			fact_url = 'http://seevl.net/entity/{entity}/facts'.format(entity=artist_sid)		
+			artist_id = artist_info['results'][0]['id']
+			artist_id
+			fact_url = 'http://data.seevl.net/entity/{entity}/facts'.format(entity=artist_id)		
 			req_fact = urllib2.Request(fact_url, None, headers)
 			response = urllib2.urlopen(req_fact)
 			fact_page = response.read()
 			artist_facts = None
 			artist_facts = json.decode(fact_page)
 			if artist_facts.has_key('genre'):
-				genre = artist_facts['genre'][0]['value'].replace(" music", "").encode('utf-8') #Grab the genre from Seevl
+				genre = artist_facts['genre'][0]['prefLabel'].replace(" music", "").encode('utf-8') #Grab the genre from Seevl
 			if artist_info['results'][0].has_key('description'):
 				artist_description = "{text}   {attrib}".format(text=artist_info['results'][0]['description'].encode('utf-8'), attrib="Summary from Seevl.net")
 				artist_description = artist_description.replace("<strong>", "").replace("</strong>", "").replace("<p>", "").replace("</p>", "")
@@ -97,12 +98,13 @@ def get_description(artist_name):
 						artist_end = artist_facts['activity_end'][0]['value']
 				artist_description = "{a} have been active since {s}. Their music is {g}\n".format(a=artist_name.encode('utf-8'), s=artist_start, g=genre)
 			#Grab the artist links from Seevl API, like: socialnet, website etc.	
-			links_url = "http://qqwweerr.seevl.net/entity/{entity}/links".format(entity=artist_sid)
+			links_url = "http://data.seevl.net/entity/{entity}/links".format(entity=artist_id)
 			req_links = urllib2.Request(links_url, None, headers)
 			response = urllib2.urlopen(req_links)
 			link_data = json.decode(response.read())
 			for key, value in link_data.items():
-				url_list.append((key.title(), value[0]['value']))
+				if key in ['wikipedia', 'nytimes', 'musicbrainz', 'homepage']:
+					url_list.append((key.title(), value[0]))
 		return (artist_description, genre, url_list)	
 	except Exception, e:
 		print e
