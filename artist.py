@@ -74,7 +74,6 @@ def get_description(artist_name):
 		else:
 			#If Seevl has info on the artist, grab some facts about them too
 			artist_id = artist_info['results'][0]['id']
-			artist_id
 			fact_url = 'http://data.seevl.net/entity/{entity}/facts'.format(entity=artist_id)		
 			req_fact = urllib2.Request(fact_url, None, headers)
 			response = urllib2.urlopen(req_fact)
